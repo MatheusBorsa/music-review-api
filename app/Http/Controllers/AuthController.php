@@ -97,4 +97,24 @@ class AuthController extends Controller
             );
         }
     }
+
+    public function logout(Request $request)
+    {
+        try {
+            $request->user()->currentAcessToken()->delete;
+
+            return ResponseApiUtil::success(
+                'Logged out succesfully',
+                null,
+                200
+            );
+
+        } catch (Exception $e) {
+            return ApiResponseUtil::error(
+                'Server Error',
+                ['error' => $e->getMessage()],
+                500
+            );
+        }
+    }
 }
