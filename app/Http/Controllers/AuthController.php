@@ -42,8 +42,51 @@ class AuthController extends Controller
         } catch (ValidationException $e) {
             return ResponseApiUtil::error(
                 'Validation Error',
+                //Method from ValidationException
                 $e->errors(),
                 422
+            );
+
+        } catch (Exception $e) {
+            return ResponseApiUtil::error(
+                'Server Error',
+                ['error' => $e->getMessage()],
+                500
+            );
+        }
+    }
+
+    public function login(Request $request)
+    {
+        try {
+            $request->validate([
+                'email' => 'required|string|email',
+                'password' => 'required|string'
+            ]);
+
+            $user = User::where('email', $request->email)->first();
+
+            if (!$user || !Hash::check($request->password, $user->password)) {
+                throw ValidationException::withMessages([
+                    'email' => ['The provided credential are invalid.']
+                ]);
+            }
+
+            $token = $user->createToken('auth_token')->plainTextToken;
+
+            return ResponseApiUtil::success(
+                'Login successfull',
+                [
+                    'user' => $user,
+                    'token' => $token
+                ],
+            );
+
+        } catch (ValidationException $e){
+            return ResponseApiUtil::error(
+                'Authentication Error',
+                $e->errors(),
+                401
             );
 
         } catch (Exception $e) {
