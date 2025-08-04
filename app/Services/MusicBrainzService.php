@@ -38,4 +38,17 @@ class MusicBrainzService
 
         return $response->json();
     }
+
+    protected function formatArtists(array $artists)
+    {
+        return collect($artists)->map(function ($artist) {
+            return [
+                'mbid' => $artist['id'],
+                'name' => $artist['name'],
+                'type' => $artist['type'] ?? null,
+                'country' => $artist['country'] ?? null,
+                'description' => $artist['disambiguation'] ?? null
+            ];
+        })->toArray();
+    }
 }

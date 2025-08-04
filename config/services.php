@@ -35,4 +35,8 @@ return [
         ],
     ],
 
+    'musicbrainz' => [
+    'user_agent' => env('MUSICBRAINZ_USER_AGENT')
+    ],
+
 ];
