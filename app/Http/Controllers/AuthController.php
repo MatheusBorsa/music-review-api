@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 use App\Utils\ApiResponseUtil;
+use App\Utils\PasswordValidatorUtil;
 
 class AuthController extends Controller
 {
@@ -17,7 +18,12 @@ class AuthController extends Controller
             $validatedData = $request->validate([
             'username' => 'required|string|max:255|unique:users',
             'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
+            'password' => [
+                'required',
+                'string',
+                'confirmed',
+                new PasswordValidatorUtil() 
+            ],
             'profile_picture' => 'nullable|string',
             'bio' => 'nullable|string',
             ]);
