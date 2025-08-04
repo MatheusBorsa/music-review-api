@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
+use App\Utils\ApiResponseUtil;
 
 class AuthController extends Controller
 {
@@ -21,11 +23,11 @@ class AuthController extends Controller
             ]);
 
             $user = User::create([
-                'username' => $validatedData['name'],
+                'username' => $validatedData['username'],
                 'email' => $validatedData['email'],
                 'password' => $validatedData['password'],
-                'profile_picture' => $validatedData['profile_picture'],
-                'bio' => $validatedData['bio']
+                'profile_picture' => $validatedData['profile_picture'] ?? null,
+                'bio' => $validatedData['bio'] ?? null
             ]);
 
             $token = $user->createToken('auth_token')->plainTextToken;
@@ -40,7 +42,7 @@ class AuthController extends Controller
             );
 
         } catch (ValidationException $e) {
-            return ResponseApiUtil::error(
+            return ApiResponseUtil::error(
                 'Validation Error',
                 //Method from ValidationException
                 $e->errors(),
@@ -48,7 +50,7 @@ class AuthController extends Controller
             );
 
         } catch (Exception $e) {
-            return ResponseApiUtil::error(
+            return ApiResponseUtil::error(
                 'Server Error',
                 ['error' => $e->getMessage()],
                 500
@@ -74,8 +76,8 @@ class AuthController extends Controller
 
             $token = $user->createToken('auth_token')->plainTextToken;
 
-            return ResponseApiUtil::success(
-                'Login successfull',
+            return ApiResponseUtil::success(
+                'Login successful',
                 [
                     'user' => $user,
                     'token' => $token
@@ -83,14 +85,14 @@ class AuthController extends Controller
             );
 
         } catch (ValidationException $e){
-            return ResponseApiUtil::error(
+            return ApiResponseUtil::error(
                 'Authentication Error',
                 $e->errors(),
                 401
             );
 
         } catch (Exception $e) {
-            return ResponseApiUtil::error(
+            return ApiResponseUtil::error(
                 'Server Error',
                 ['error' => $e->getMessage()],
                 500
@@ -101,9 +103,9 @@ class AuthController extends Controller
     public function logout(Request $request)
     {
         try {
-            $request->user()->currentAcessToken()->delete;
+            $request->user()->currentAccessToken()->delete();
 
-            return ResponseApiUtil::success(
+            return ApiResponseUtil::success(
                 'Logged out succesfully',
                 null,
                 200
