@@ -74,12 +74,14 @@ class ArtistsController extends Controller
                 'favorites' => $user->favoriteArtists()->pluck('artist_mbid')
                 ], 201
             );
+            
         } catch (ValidationException $e) {
             return ApiResponseUtil::error(
                 'Validation failed',
                 $e->errors(),
                 422
             );
+
         } catch (\Exception $e) {
             return ApiResponseUtil::error(
                 $e->getCode() === 401 ? 'Unauthorized' : 'Failed to add favorite',
@@ -116,12 +118,14 @@ class ArtistsController extends Controller
                 ->delete();
 
             return ApiResponseUtil::success('Artist removed from favorites');
+
         } catch (ValidationException $e) {
             return ApiResponseUtil::error(
                 'Validation failed',
                 $e->errors(),
                 422
             );
+
         } catch (\Exception $e) {
             return ApiResponseUtil::error(
                 $e->getCode() === 401 ? 'Unauthorized' : 'Failed to remove favorite',
@@ -147,8 +151,12 @@ class ArtistsController extends Controller
 
                     return [
                         'mbid' => $favorite->artist_mbid,
-                        'name' => $artistData['name'] ?? 'Unknown Artist'
+                        'name' => $artistData['name'] ?? 'Unknown Artist',
+                        'type' => $artistData['type'] ?? null,
+                        'country' => $artistData['country'] ?? null,
+                        'added_at' => $favorite->created_at->toIso8601String()
                     ];
+
                 } catch (\Exception $e) {
                     return [
                         'mbid' => $favorite->artist_mbid,
