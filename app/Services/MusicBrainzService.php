@@ -39,16 +39,15 @@ class MusicBrainzService
         return $response->json();
     }
 
-    protected function formatArtists(array $artists)
+    public function getArtistDetails(string $mbid)
     {
-        return collect($artists)->map(function ($artist) {
-            return [
-                'mbid' => $artist['id'],
-                'name' => $artist['name'],
-                'type' => $artist['type'] ?? null,
-                'country' => $artist['country'] ?? null,
-                'description' => $artist['disambiguation'] ?? null
-            ];
-        })->toArray();
+        $response = $this->getArtist($mbid);
+
+        return [
+            'name' => $response['name'] ?? null,
+            'type' => $response['type'] ?? null,
+            'country' => $response['country'] ?? null,
+            'description' => $response['disambiguation'] ?? null
+        ];
     }
 }

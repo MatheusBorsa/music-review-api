@@ -6,16 +6,21 @@ use Illuminate\Support\Facades\Http;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Services\MusicBrainzService;
+use App\Services\UserFavoriteService;
 use App\Utils\ApiResponseUtil;
 use Illuminate\Validation\ValidationException;
 
 class ArtistsController extends Controller
 {
     protected MusicBrainzService $musicBrainz;
+    protected UserFavoriteService $userFavoriteService;
 
-    public function __construct(MusicBrainzService $musicBrainz)
+    public function __construct(
+        MusicBrainzService $musicBrainz,
+        UserFavoriteService $userFavoriteService)
     {
        $this->musicBrainz = $musicBrainz; 
+       $this->userFavoriteService = $userFavoriteService;
     }
 
     public function search(Request $request)
@@ -74,7 +79,7 @@ class ArtistsController extends Controller
                 'favorites' => $user->favoriteArtists()->pluck('artist_mbid')
                 ], 201
             );
-            
+
         } catch (ValidationException $e) {
             return ApiResponseUtil::error(
                 'Validation failed',
@@ -141,35 +146,13 @@ class ArtistsController extends Controller
             $user = auth()->user();
             throw_if(!$user, \Exception::class, 'Unauthenticated', 401);
 
-            $favorites = $user->favoriteArtists()
-                ->orderBy('created_at', 'desc')
-                ->get(['artist_mbid', 'created_at']);
-
-            $artists = $favorites->map(function ($favorite) {
-                try {
-                    $artistData = $this->musicBrainz->getArtist($favorite->artist_mbid);
-
-                    return [
-                        'mbid' => $favorite->artist_mbid,
-                        'name' => $artistData['name'] ?? 'Unknown Artist',
-                        'type' => $artistData['type'] ?? null,
-                        'country' => $artistData['country'] ?? null,
-                        'added_at' => $favorite->created_at->toIso8601String()
-                    ];
-
-                } catch (\Exception $e) {
-                    return [
-                        'mbid' => $favorite->artist_mbid,
-                        'name' => 'Error loading artist',
-                        'error' => $e->getMessage()
-                    ];
-                }
-            });
+            $favorites = $this->userFavoriteService->getFavorites($user);
 
             return ApiResponseUtil::success(
                 'Favorite artists retrieved',
-                $artists->filter()->values()->toArray()
+                $favorites
             );
+
         } catch (\Exception $e) {
             return ApiResponseUtil::error(
                 $e->getCode() === 401 ? 'Unauthorized' : 'Failed to retrieve favorites',
