@@ -19,3 +19,9 @@ Route::middleware('auth:sanctum')->group(function() {
 
 //Artists
 Route::get('/artists/search', [ArtistsController::class, 'search']);
+
+Route::middleware('auth:sanctum')->group(function() {
+    Route::post('/artists/favorites', [ArtistsController::class, 'addFavorite']);
+    Route::delete('/artists/favorites', [ArtistsController::class, 'removeFavorite']);
+    Route::get('/artists/favorites', [ArtistsController::class, 'listFavorites']);
+});

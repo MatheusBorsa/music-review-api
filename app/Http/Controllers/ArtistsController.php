@@ -43,6 +43,23 @@ class ArtistsController extends Controller
         }
     }
 
+    public function addFavorite(Request $request)
+    {
+        $validated = $request->validate([
+            'artist_mbid' => 'required|string|uuid'
+        ]);
+
+        $user = auth()->user();
+
+        $user->favoriteArtists()->create([
+            'artist_mbid' => $validated['artist_mbid']
+        ]);
+
+        return ApiResponseUtil::success("Artist added to the favorites", [
+            'favorites' => $user->favoriteArtists()->pluck('artist_mbid')
+        ]);
+    }
+
     protected function formatArtists(array $artists)
     {
         return collect($artists)->map(function ($artist) {
