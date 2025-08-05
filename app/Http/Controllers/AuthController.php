@@ -10,6 +10,7 @@ use Illuminate\Validation\ValidationException;
 use App\Utils\ApiResponseUtil;
 use App\Utils\PasswordValidatorUtil;
 
+
 class AuthController extends Controller
 {
     public function register(Request $request)
@@ -122,6 +123,27 @@ class AuthController extends Controller
                 'Server Error',
                 ['error' => $e->getMessage()],
                 500
+            );
+        }
+    }
+
+    //For development only at the moment
+    public function self(Request $requesrt)
+    {
+        try {
+            $user = auth()->user();
+            throw_if(!$user, Exception::class, 'Unauthenticated', 401);
+
+            return ApiResponseUtil::success(
+                'Authenticated user retrieved successfully',
+                $user
+            );
+
+        } catch (Exception $e) {
+            return ApiResponseUtil::error(
+                $e->getMessage(),
+                null,
+                $e->getCode() ?: 500
             );
         }
     }
