@@ -84,37 +84,20 @@ class SocialController extends Controller
         }
     }
 
-    //Retrieving stats directly from the authenticated user
-    //Will need an universal method to display all stats for the profiles later on
-    public function stats(Request $request)
+    public function stats(User $userStats)
     {
         try {
             $user = auth()->user();
             throw_if(!$user, \Exception::class, 'Unauthenticated', 401);
 
-            $type = $request->query('type');
+            $data = [
+                'username' => $userStats->username,
+                'followers' => $userStats->followers()->count(),
+                'following' => $userStats->following()->count(),
+                'favorite_artists' => $this->userFavoriteService->getFavorites($userStats)
+            ];
 
-            
-            if ($type && !in_array($type, ['followers', 'following'])) {
-                return ApiResponseUtil::error(
-                    'Invalid type parameter. Must be following or followers',
-                    null,
-                    400
-                );
-            }
-
-            $data = [];
-
-            if (!$type || $type === 'followers') {
-                $data['followers_count'] = $user->followers()->count();
-            }
-
-            
-            if (!$type || $type === 'following') {
-                $data['following_count'] = $user->following()->count();
-            }
-
-            return ApiResponseUtil::success('Social stats fetched', $data);
+            return ApiResponseUtil::success('Social stats retrieved', $data);
 
         } catch (\Exception $e) {
             $statusCode = is_int($e->getCode()) && $e->getCode() >= 100 ? $e->getCode() : 500;
