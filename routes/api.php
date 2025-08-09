@@ -32,5 +32,5 @@ Route::middleware('auth:sanctum')->group(function() {
 Route::middleware('auth:sanctum')->group(function() {
     Route::post('/users/{user}/follow', [SocialController::class, 'follow']);
     Route::post('/users/{user}/unfollow', [SocialController::class, 'unfollow']);
-    Route::get('/users/stats/{userStats}', [SocialController::class, 'stats']);
+    Route::get('/users/stats/{user}', [SocialController::class, 'stats']);
 });

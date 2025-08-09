@@ -84,17 +84,17 @@ class SocialController extends Controller
         }
     }
 
-    public function stats(User $userStats)
+    public function stats(User $user)
     {
         try {
             $user = auth()->user();
             throw_if(!$user, \Exception::class, 'Unauthenticated', 401);
 
             $data = [
-                'username' => $userStats->username,
-                'followers' => $userStats->followers()->count(),
-                'following' => $userStats->following()->count(),
-                'favorite_artists' => $this->userFavoriteService->getFavorites($userStats)
+                'username' => $user->username,
+                'followers' => $user->followers()->count(),
+                'following' => $user->following()->count(),
+                'favorite_artists' => $this->userFavoriteService->getFavorites($user)
             ];
 
             return ApiResponseUtil::success('Social stats retrieved', $data);

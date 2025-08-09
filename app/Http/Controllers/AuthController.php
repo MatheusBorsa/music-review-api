@@ -127,24 +127,24 @@ class AuthController extends Controller
         }
     }
 
-    //For development only at the moment
-    public function self(Request $requesrt)
-    {
-        try {
-            $user = auth()->user();
-            throw_if(!$user, Exception::class, 'Unauthenticated', 401);
+    // //For development only at the moment
+    // public function self(Request $requesrt)
+    // {
+    //     try {
+    //         $user = auth()->user();
+    //         throw_if(!$user, Exception::class, 'Unauthenticated', 401);
 
-            return ApiResponseUtil::success(
-                'Authenticated user retrieved successfully',
-                $user
-            );
+    //         return ApiResponseUtil::success(
+    //             'Authenticated user retrieved successfully',
+    //             $user
+    //         );
 
-        } catch (Exception $e) {
-            return ApiResponseUtil::error(
-                $e->getMessage(),
-                null,
-                $e->getCode() ?: 500
-            );
-        }
-    }
+    //     } catch (Exception $e) {
+    //         return ApiResponseUtil::error(
+    //             $e->getMessage(),
+    //             null,
+    //             $e->getCode() ?: 500
+    //         );
+    //     }
+    // }
 }

@@ -118,10 +118,6 @@ class ArtistsController extends Controller
                 );
             }
 
-            $user->favoriteArtists()
-                ->where('artist_mbid', $validated['artist_mbid'])
-                ->delete();
-
             return ApiResponseUtil::success('Artist removed from favorites');
 
         } catch (ValidationException $e) {
