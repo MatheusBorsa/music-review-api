@@ -39,15 +39,25 @@ class MusicBrainzService
         return $response->json();
     }
 
-    public function getArtistDetails(string $mbid)
+    public function getArtistsDetails(array $mbids)
     {
-        $response = $this->getArtist($mbid);
+        $responses = Http::pool(callback: function ($pool) use ($mbids) {
+            return array_map(function ($mbid) use ($pool) {
+                return $pool->withHeaders([
+                    'User-Agent' => $this->userAgent
+                ])->get($this->baseUri . "artist/{$mbid}", [
+                    'fmt' => 'json',
+                    'inc' => 'url-rels+release-groups'
+                ]);
+            }, $mbids);
+        });
 
-        return [
-            'name' => $response['name'] ?? null,
-            'type' => $response['type'] ?? null,
-            'country' => $response['country'] ?? null,
-            'description' => $response['disambiguation'] ?? null
-        ];
+        $results = [];
+        foreach ($responses as $index => $response) {
+            if ($response->successful()) {
+                $results[$mbids[$index]] = $response->json();
+            }
+        }
+        return $results;
     }
 }
