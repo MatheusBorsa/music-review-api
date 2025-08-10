@@ -59,4 +59,37 @@ class TrackController extends Controller
             );
         }
     }
+
+    public function show(string $mbid)
+    {
+        try {
+            $trackDetails = $this->musicBrainz->getTrackDetails([$mbid]);
+
+            if (empty($trackDetails) || !isset($trackDetails[$mbid])) {
+                return ApiResponseUtil::error('Track not found', [], 404);
+            }
+
+            $track = $trackDetails[$mbid];
+
+            $formattedTrack = [
+            'mbid'       => $track['id'] ?? null,
+            'title'      => $track['title'] ?? null,
+            'length'   => isset($track['length'])
+                ? floor(($track['length'] / 1000) / 60) . ':' . str_pad(floor(($track['length'] / 1000) % 60), 2, '0', STR_PAD_LEFT)
+                : null,
+            'artist'     => $track['artist-credit'][0]['artist']['name'] ?? null,
+            'release'    => $track['releases'][0]['title'] ?? null,
+            'disambiguation' => $track['disambiguation'] ?? null,
+            ];
+
+            return ApiResponseUtil::success('Track details retrived', $formattedTrack);
+
+        } catch (\Exception $e) {
+            return ApiResponseUtil::error(
+                'Failed to fetch track details',
+                ['error' => $e->getMessage()],
+                500
+            );
+        }
+    }
 }

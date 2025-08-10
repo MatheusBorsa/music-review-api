@@ -90,7 +90,7 @@ class MusicBrainzService
     public function getTrackDetails(array $mbids)
     {
         return $this->bulkRequest($mbids, 'recording', [
-            'inc' => 'url-rels+releases'
+            'inc' => 'artist-credits+url-rels+releases'
         ]);
     }
 }
