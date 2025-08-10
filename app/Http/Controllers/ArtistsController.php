@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\Http;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Services\MusicBrainzService;
@@ -136,7 +135,7 @@ class ArtistsController extends Controller
         }
     }
 
-    public function listFavorites(Request $request)
+    public function listFavorites()
     {
         try {
             $user = auth()->user();

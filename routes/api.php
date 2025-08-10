@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ArtistsController;
 use App\Http\Controllers\SocialController;
+use App\Http\Controllers\TrackController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
