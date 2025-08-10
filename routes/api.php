@@ -16,7 +16,6 @@ Route::post('/login', [AuthController::class, 'login']);
 
 Route::middleware('auth:sanctum')->group(function() {
     Route::post('/logout', [AuthController::class, 'logout']);
-    Route::get('/self', [AuthController::class, 'self']);
 });
 
 // Artists Routes
@@ -34,3 +33,16 @@ Route::middleware('auth:sanctum')->group(function() {
     Route::post('/users/{user}/unfollow', [SocialController::class, 'unfollow']);
     Route::get('/users/stats/{user}', [SocialController::class, 'stats']);
 });
+
+//Reviews
+
+//Tracks
+Route::get('/tracks/search', [TrackController::class, 'search']);
+Route::get('/tracks/{track}', [TrackController::class, 'show']);
+
+//Albums
+Route::get('/albums/search', [AlbumController::class, 'search']);
+Route::get('/albums/{album}', [AlbumController::class, 'show']);
+Route::get('/albums/{album}/tracks', [AlbumController::class, 'tracks']);
+
+//Feed
