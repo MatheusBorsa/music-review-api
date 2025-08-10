@@ -62,22 +62,6 @@ class MusicBrainzService
         ]);
     }
 
-    //Albums
-        public function searchAlbums(string $query, int $limit = 10)
-    {
-        return $this->request('release-group/', [
-            'query' => $query,
-            'limit' => $limit
-        ])['release-groups'] ?? [];
-    }
-
-    public function getAlbumsDetails(array $mbids)
-    {
-        return $this->bulkRequest($mbids, 'release-group', [
-            'inc' => 'url-rels+releases'
-        ]);
-    }
-
     //Tracks
         public function searchTracks(string $query, int $limit = 10)
     {
