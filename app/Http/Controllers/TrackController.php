@@ -25,7 +25,9 @@ class TrackController extends Controller
             return [
             'mbid'     => $track['id'] ?? null,
             'title'    => $track['title'] ?? null,
-            'length'   => isset($track['length']) ? $track['length'] / 1000 : null,
+            'length'   => isset($track['length'])
+                ? floor(($track['length'] / 1000) / 60) . ':' . str_pad(floor(($track['length'] / 1000) % 60), 2, '0', STR_PAD_LEFT)
+                : null,
             'artist'   => $track['artist-credit'][0]['name'] ?? null,
             'release'  => $track['releases'][0]['title'] ?? null
             ];
