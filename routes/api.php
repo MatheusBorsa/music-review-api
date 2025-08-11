@@ -39,6 +39,8 @@ Route::middleware('auth:sanctum')->group(function() {
 //Reviews
 Route::middleware('auth:sanctum')->group(function() {
     Route::post('/users/reviews', [ReviewController::class, 'addReview']);
+    Route::put('/users/reviews', [ReviewController::class, 'editReview']);
+    Route::delete('/users/reviews', [ReviewController::class, 'deleteReview']);
 });
 //Tracks
 Route::get('/tracks/search', [TrackController::class, 'search']);

@@ -78,4 +78,90 @@ class ReviewController extends Controller
             );
         }
     }
+
+    public function editReview(Request $request)
+    {
+        try {
+            $validated = $request->validate([
+                'track_mbid' => 'required|string|uuid',
+                'rating' => 'required|numeric|min:0|max:5'
+            ]);
+
+            $user = auth()->user();
+            throw_if(!$user, \Exception::class, 'Unauthenticated', 401);
+
+            $review = $user->trackReviews()
+                ->where('track_mbid', $validated['track_mbid'])
+                ->first();
+
+            if (!$review) {
+                return ApiResponseUtil::error('Review for that track does not exist',
+            [],
+            404);
+            }
+
+            $review->update([
+                'rating' => $validated['rating']
+            ]);
+
+            $trackDetails = $this->musicBrainz->getTrackDetails([$validated['track_mbid']]);
+            $track = $trackDetails[$validated['track_mbid']] ?? null;
+
+            $formattedTrack = [
+                'mbid'          => $track['id'] ?? null,
+                'title'         => $track['title'] ?? null,
+                'length'        => isset($track['length'])
+                    ? floor(($track['length'] / 1000) / 60) . ':' . str_pad(floor(($track['length'] / 1000) % 60), 2, '0', STR_PAD_LEFT)
+                    : null,
+                'artist'        => $track['artist-credit'][0]['artist']['name'] ?? null,
+                'release'       => $track['releases'][0]['title'] ?? null,
+                'disambiguation'=> $track['disambiguation'] ?? null,
+            ];
+            return ApiResponseUtil::success(
+                "Review successfuly edited",
+                [
+                'review' => $review,
+                'track' => $formattedTrack
+                ], 201
+            );
+
+        } catch (ValidationException $e) {
+            return ApiResponseUtil::error(
+                'Validation failed',
+                $e->errors(),
+                422
+            );
+
+        } catch (\Exception $e) {
+            return ApiResponseUtil::error(
+                $e->getCode() === 401 ? 'Unauthorized' : 'Failed to add review',
+                ['error' => $e->getMessage()],
+                $e->getCode() ?: 500
+            );
+        }
+    }
+
+        public function deleteReview(Request $request)
+    {
+        $validated = $request->validate([
+            'track_mbid' => 'required|string|uuid',
+        ]);
+
+        $user = auth()->user();
+        throw_if(!$user, \Exception::class, 'Unauthenticated', 401);
+
+        $review = $user->trackReviews()
+            ->where('track_mbid', $validated['track_mbid'])
+            ->first();
+
+        if (!$review) {
+            return ApiResponseUtil::error('Review not found',
+            [],
+             404);
+        }
+
+        $review->delete();
+
+        return ApiResponseUtil::success('Review successfully deleted');
+    }
 }
