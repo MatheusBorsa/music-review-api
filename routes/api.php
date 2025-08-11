@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ArtistsController;
 use App\Http\Controllers\SocialController;
 use App\Http\Controllers\TrackController;
+use App\Http\Controllers\ReviewController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -36,7 +37,9 @@ Route::middleware('auth:sanctum')->group(function() {
 });
 
 //Reviews
-
+Route::middleware('auth:sanctum')->group(function() {
+    Route::post('/users/reviews', [ReviewController::class, 'addReview']);
+});
 //Tracks
 Route::get('/tracks/search', [TrackController::class, 'search']);
 Route::get('/tracks/{track}', [TrackController::class, 'show']);

@@ -65,8 +65,8 @@ class User extends Authenticatable
         return $this->belongsToMany(User::class, 'followers', 'followed_id', 'follower_id');
     }
 
-    public function artistReviews()
+    public function trackReviews()
     {
-        return $this->hasMany(ArtistReview::class);
+        return $this->hasMany(TrackReview::class);
     }
 }

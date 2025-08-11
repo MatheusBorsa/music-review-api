@@ -11,13 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('artist_reviews', function (Blueprint $table) {
+        Schema::create('track_reviews', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->string('artist_mbid');
+            $table->string('track_mbid');
             $table->decimal('rating', 2, 1);
             $table->timestamps();
-            $table->unique(['user_id', 'artist_mbid']);
+            $table->unique(['user_id', 'track_mbid']);
         });
     }
 
@@ -26,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('artist_reviews');
+        Schema::dropIfExists('track_reviews');
     }
 };

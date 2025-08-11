@@ -4,11 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class ArtistReview extends Model
+class TrackReview extends Model
 {
     protected $fillable = [
         'user_id',
-        'artist_mbid',
+        'track_mbid',
         'rating'
     ];
 

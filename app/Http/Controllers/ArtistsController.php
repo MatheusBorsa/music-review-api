@@ -63,7 +63,7 @@ class ArtistsController extends Controller
                 ->exists();
 
             if ($exists) {
-                return ApiResponseUtil::success('Artist already in favorites', [
+                return ApiResponseUtil::error('Artist already in favorites', [
                     'favorites' => $user->favoriteArtists()->pluck('artist_mbid')
                 ]);
             }
